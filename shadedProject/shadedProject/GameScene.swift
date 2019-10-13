@@ -9,34 +9,88 @@
 import SpriteKit
 import GameplayKit
 
+
+struct PhysicsCategory {
+    static let Object : UInt32 = 0x1 << 0
+    static let Platform : UInt32 = 0x1 << 1
+    
+}
 class GameScene: SKScene {
+    
     
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
-    
+    let scoreLabel = SKLabelNode()
+    var score = 0
     var platform = SKShapeNode()
     
     
+
+    
     override func didMove(to view: SKView) {
-        setupPlayerAndObstacle()
+ 
+
         
-        // Get label node from scene and store it for use later
-//        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-//        if let label = self.label {
-//            label.alpha = 0.0
-//            label.run(SKAction.fadeIn(withDuration: 2.0))
+        setupPlayerAndObstacle()
+        addPlatform()
+        //score_Label()
+        
+
+        
+        NSLog(String(score))
+    }
+    
+    func didBeginContact(contact : SKPhysicsContact){
+        let firstBody = contact.bodyA.node as! SKSpriteNode
+        let secondBody = contact.bodyB.node as! SKSpriteNode
+        
+//        if contact.bodyA.collisionBitMask == PhysicsCategory.Object{
+//            NSLog(String(score))
+//        }
+//        if contact.bodyB.collisionBitMask == PhysicsCategory.Object{
+//            NSLog(String(score))
 //        }
         
+        if ((firstBody.name == "Platform") && (secondBody.name == "Object")){
+            collision(Platform: firstBody, Shape: secondBody)
+            NSLog(String(score))
+            print("hello")
+        }
+        else if ((firstBody.name == "Object") && (secondBody.name == "Platform")){
+            collision(Platform: secondBody, Shape: firstBody)
+            NSLog(String(score))
+            print("hello")
+        }
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+    }
+    
+    func collision(Platform : SKSpriteNode, Shape : SKSpriteNode){
+        score += 1
+        score_Label()
+        NSLog(String(score))
+        print("hello")
+    }
+    
+    func score_Label(){
         
+        //Attributes for score
+        scoreLabel.position = CGPoint(x:0, y:0)
+        scoreLabel.fontColor = .white
+        scoreLabel.fontSize = 200
+        scoreLabel.text = String(score)
+        self.addChild(scoreLabel)
+        
+    }
+    
+    func addPlatform(){
+        
+        // Dimensions, Positioning, and Color of Platform
         platform = SKShapeNode.init(rectOf: CGSize.init(width: 200, height: 30))
         platform.position = CGPoint(x: 0,  y: -570)
         platform.fillColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 1)
         platform.strokeColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 1)
         
+        //Physics Attribute for Platform
         platform.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 200, height: 30))
         platform.physicsBody?.isDynamic = false
         platform.physicsBody?.allowsRotation = false
@@ -47,25 +101,18 @@ class GameScene: SKScene {
         platform.physicsBody?.linearDamping = 0.1
         platform.physicsBody?.angularDamping = 0.1
         
-        platform.physicsBody?.categoryBitMask = 1
-        platform.physicsBody?.collisionBitMask = 2
-        platform.physicsBody?.fieldBitMask = 0
-        platform.physicsBody?.contactTestBitMask = 2
+        //Collision Attributes
+        platform.physicsBody?.categoryBitMask = PhysicsCategory.Platform
+        platform.physicsBody?.collisionBitMask = PhysicsCategory.Object
+        platform.physicsBody?.contactTestBitMask = PhysicsCategory.Object | PhysicsCategory.Platform;
+        platform.name = "Platform"
         
         self.addChild(platform)
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
     }
     
     func setupPlayerAndObstacle(){
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addObstacle), SKAction.wait(forDuration: 0.75)])))
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addObstacle), SKAction.wait(forDuration: 1.5)])))
     }
     
     func addObstacle(){
@@ -85,11 +132,11 @@ class GameScene: SKScene {
             let objectRandomizer : Int = Int.random(in: 0 ... 1)    // : a randomizer for the type of shape to create
             
             if circleNumber == shadedPositionRandomizer{ // if statement: creates the object with the different shade at the randomized location
-                addCircleObstacle(xPosition: positionObjects[circleNumber], yPosition: 800, rgbValue: rgbTarget, shape: objectRandomizer)
+                addShapeObstacle(xPosition: positionObjects[circleNumber], yPosition: 800, rgbValue: rgbTarget, shape: objectRandomizer)
                 
             }
             else{ // else statement: creates the rest of the "normal" shaded object
-                addCircleObstacle(xPosition: positionObjects[circleNumber], yPosition: 800, rgbValue: rgbNormal, shape: objectRandomizer)
+                addShapeObstacle(xPosition: positionObjects[circleNumber], yPosition: 800, rgbValue: rgbNormal, shape: objectRandomizer)
             }
         }
         
@@ -97,7 +144,7 @@ class GameScene: SKScene {
     
     // A function that creates ONE object, with parameters that determines the
     // positioning (CGFloat) , color(CGFloat Array), and shape(int)
-    func addCircleObstacle(xPosition: CGFloat, yPosition : CGFloat, rgbValue: Array<CGFloat>, shape: Int){
+    func addShapeObstacle(xPosition: CGFloat, yPosition : CGFloat, rgbValue: Array<CGFloat>, shape: Int){
         
         //Globabl variables of type Shape Node and Physics Body
         //Assigned values distinguished by the shape given
@@ -122,6 +169,7 @@ class GameScene: SKScene {
         //ShapeObject.fillColor = SKColor.init(red: rgbValue[0], green: rgbValue[1], blue: rgbValue[2], alpha: 1)
         ShapeObject.glowWidth = 1.0
         ShapeObject.lineWidth = 15
+        
         self.addChild(ShapeObject)
         
         //Declaration of the physics applied to the shape
@@ -131,15 +179,15 @@ class GameScene: SKScene {
         ShapeObject.physicsBody?.pinned = false
         ShapeObject.physicsBody?.affectedByGravity = true
         ShapeObject.physicsBody?.friction = 0.0
-        ShapeObject.physicsBody?.restitution = 3.8 //BOUNCYINESS
-        ShapeObject.physicsBody?.linearDamping = 0
-        ShapeObject.physicsBody?.angularDamping = 0
+        ShapeObject.physicsBody?.restitution = 0.4     //BOUNCYINESS
+        ShapeObject.physicsBody?.linearDamping = 0.3
+        ShapeObject.physicsBody?.angularDamping = 0.2
         
         //Declaration of the grouping of physics (involving collisions with other objects)
-        ShapeObject.physicsBody?.categoryBitMask = 2
-        ShapeObject.physicsBody?.collisionBitMask = 1
-        ShapeObject.physicsBody?.fieldBitMask = 0
-        ShapeObject.physicsBody?.contactTestBitMask = 1
+        ShapeObject.physicsBody?.categoryBitMask = PhysicsCategory.Object
+        ShapeObject.physicsBody?.collisionBitMask = PhysicsCategory.Platform
+        ShapeObject.physicsBody?.contactTestBitMask = PhysicsCategory.Platform | PhysicsCategory.Object
+        ShapeObject.name = "Object"
         
         //If the shape is square (or 1) then applies rotation
         if shape == 1{
@@ -155,14 +203,19 @@ class GameScene: SKScene {
             
             ShapeObject.run(SKAction.repeatForever((rotate)))
         }
+        
+        if ShapeObject.position == CGPoint(x: xPosition, y: -750){
+            ShapeObject.run(SKAction.removeFromParent())
+        }
 
+        
         //Action for the movement of the object from top to bottom of the screen
         //Also removes the shape node once it reaches the bottom.
-        let moveVertically = SKAction.moveTo(y: -750, duration: Double(2))
+        /*let moveVertically = SKAction.moveTo(y: -750, duration: Double(2))
         let removeNode = SKAction.removeFromParent()
         let gravity = SKAction.sequence([moveVertically, removeNode])
         
-        ShapeObject.run(gravity)
+        ShapeObject.run(gravity)*/
         
 
     }
