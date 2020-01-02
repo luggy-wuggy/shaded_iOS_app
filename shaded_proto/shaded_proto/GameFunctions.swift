@@ -25,6 +25,8 @@ extension GameScene{
         
         if (firstBody.categoryBitMask & targetCategory) != platformCategory && (secondBody.categoryBitMask & platformCategory) != targetCategory{
             targetShapeCollide(platformNode: firstBody.node as! SKShapeNode, shapeNode: secondBody.node as! SKShapeNode)
+        }else{
+            normalShapeCollide(platformNode: firstBody.node as! SKShapeNode, shapeNode: secondBody.node as! SKShapeNode)
         }
         
     }
@@ -35,6 +37,15 @@ extension GameScene{
         shapeNode.run(SKAction.sequence(collision))
         
         score += 1
+        
+    }
+    
+    func normalShapeCollide (platformNode: SKShapeNode, shapeNode: SKShapeNode){
+        
+        let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
+        shapeNode.run(SKAction.sequence(collision))
+        
+        score -= 1
         
     }
     

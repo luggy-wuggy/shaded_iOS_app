@@ -104,6 +104,7 @@ extension GameScene {
     func addLabel(){
         scoreLabel = SKLabelNode(text: "0")
         scoreLabel.position = CGPoint(x: 0, y: 0)
+        scoreLabel.zPosition = -1
         scoreLabel.fontColor = .white
         scoreLabel.fontSize = 200
         
