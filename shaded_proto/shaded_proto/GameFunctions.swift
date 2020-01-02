@@ -23,7 +23,7 @@ extension GameScene{
             secondBody = contact.bodyA
         }
         
-        if (firstBody.categoryBitMask & shapeCategory) != platformCategory && (secondBody.categoryBitMask & platformCategory) != shapeCategory{
+        if (firstBody.categoryBitMask & targetCategory) != platformCategory && (secondBody.categoryBitMask & platformCategory) != targetCategory{
             targetShapeCollide(platformNode: firstBody.node as! SKShapeNode, shapeNode: secondBody.node as! SKShapeNode)
         }
         

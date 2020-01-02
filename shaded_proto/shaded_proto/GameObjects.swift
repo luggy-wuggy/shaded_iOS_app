@@ -12,23 +12,36 @@ import GameplayKit
 
 extension GameScene {
     
-    
-    @objc func normalShape(){
+    @objc func threeShapes(){
+        
+        // RGB picker
+        let rgbPackage = createRGB_Values()
+        let rgbNormal = rgbPackage[0]
+        let rgbTarget = rgbPackage[1]
+        let normalColor: SKColor = SKColor.init(red: rgbNormal[0], green: rgbNormal[1], blue: rgbNormal[2], alpha: 1)
+        let targetColor: SKColor = SKColor.init(red: rgbTarget[0], green: rgbTarget[1], blue: rgbTarget[2], alpha: 1)
         
         
+        var shapePosition : [CGFloat] = [(frame.minX)/1.5, (frame.midX), (frame.maxX)/1.5]
+        shapePosition = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: shapePosition) as! [CGFloat]
+        let randomPosition = shapePosition.popLast()!
         
+        shape(xPosition: randomPosition, rgbValue: targetColor, targetBool: true)
+        
+        for _ in 0 ... 1{
+            let randomPosition = shapePosition.popLast()!
+            shape(xPosition: randomPosition, rgbValue: normalColor, targetBool: false)
+        }
+
     }
     
-    @objc func targetShape(){
-        
-        let rgbPackage = createRGB_Values()
-        let rgbTarget = rgbPackage[1]
-        let colorTarget: SKColor = SKColor.init(red: rgbTarget[0], green: rgbTarget[1], blue: rgbTarget[2], alpha: 1)
+    
+    @objc func shape(xPosition: CGFloat, rgbValue: SKColor, targetBool: Bool){
         
         // Dimensions and Positioning of TargetedShape
         let shape = SKShapeNode(circleOfRadius: 85)
-        shape.position = CGPoint(x: ((frame.maxX)/1.50), y: frame.maxY)
-        shape.strokeColor = colorTarget
+        shape.position = CGPoint(x: xPosition, y: frame.maxY + 120)
+        shape.strokeColor = rgbValue
         //shape.fillColor = colorTarget
         shape.glowWidth = 1.0
         shape.lineWidth = 15
@@ -45,8 +58,13 @@ extension GameScene {
         shape.physicsBody?.angularDamping = 0.2
         
         // Collision Attributes
-        shape.physicsBody?.categoryBitMask = shapeCategory
-        shape.physicsBody?.contactTestBitMask = platformCategory
+        if targetBool{
+            shape.physicsBody?.categoryBitMask = targetCategory
+            shape.physicsBody?.contactTestBitMask = platformCategory
+        }else{
+            shape.physicsBody?.categoryBitMask = normalCategory
+            shape.physicsBody?.contactTestBitMask = 0
+        }
         shape.physicsBody?.collisionBitMask = platformCategory
         shape.physicsBody?.usesPreciseCollisionDetection = true
         
@@ -74,8 +92,8 @@ extension GameScene {
         
         // Collision Attributes
         platform.physicsBody?.categoryBitMask = platformCategory
-        platform.physicsBody?.contactTestBitMask = shapeCategory
-        platform.physicsBody?.collisionBitMask = platformCategory | shapeCategory
+        platform.physicsBody?.contactTestBitMask = targetCategory
+        platform.physicsBody?.collisionBitMask = platformCategory | targetCategory
         
         self.addChild(platform)
         

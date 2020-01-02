@@ -22,8 +22,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var gameTimer:Timer!
 
-    
-    let shapeCategory:UInt32 = 0x1 << 1
+    let normalCategory:UInt32 = 0x1 << 2
+    let targetCategory:UInt32 = 0x1 << 1
     let platformCategory:UInt32 = 0x1 << 0
     
     
@@ -31,7 +31,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         addPlatform()
         addLabel()
-        gameTimer = Timer.scheduledTimer(timeInterval: 0.75, target: self, selector: #selector(targetShape), userInfo: nil, repeats: true)
+        gameTimer = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
 
         
         self.physicsWorld.contactDelegate = self
