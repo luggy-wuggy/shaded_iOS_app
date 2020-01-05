@@ -35,7 +35,6 @@ extension GameScene {
 
     }
     
-    
     @objc func shape(xPosition: CGFloat, rgbValue: SKColor, targetBool: Bool){
         
         // Dimensions and Positioning of TargetedShape
@@ -60,12 +59,12 @@ extension GameScene {
         // Collision Attributes
         if targetBool{
             shape.physicsBody?.categoryBitMask = targetCategory
-            shape.physicsBody?.contactTestBitMask = platformCategory
+            shape.physicsBody?.contactTestBitMask = platformCategory | boundaryCategory
         }else{
             shape.physicsBody?.categoryBitMask = normalCategory
-            shape.physicsBody?.contactTestBitMask = 0
+            shape.physicsBody?.contactTestBitMask = platformCategory | boundaryCategory
         }
-        shape.physicsBody?.collisionBitMask = platformCategory
+        shape.physicsBody?.collisionBitMask = platformCategory | boundaryCategory | targetCategory | normalCategory
         shape.physicsBody?.usesPreciseCollisionDetection = true
         
         self.addChild(shape)
@@ -92,11 +91,35 @@ extension GameScene {
         
         // Collision Attributes
         platform.physicsBody?.categoryBitMask = platformCategory
-        platform.physicsBody?.contactTestBitMask = targetCategory
-        platform.physicsBody?.collisionBitMask = platformCategory | targetCategory
+        platform.physicsBody?.contactTestBitMask = targetCategory | normalCategory
+        platform.physicsBody?.collisionBitMask = platformCategory | targetCategory | normalCategory
         
         self.addChild(platform)
+    }
+    
+    func addBoundary(){
         
+        boundary = SKShapeNode.init(rectOf: CGSize.init(width: 900, height: 30))
+        boundary.position = CGPoint(x: frame.midX, y: frame.minY)
+        boundary.fillColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+        boundary.strokeColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+        
+        // Physics Attributes
+        boundary.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 900, height: 30))
+        boundary.physicsBody?.isDynamic = false
+        boundary.physicsBody?.allowsRotation = false
+        boundary.physicsBody?.pinned = false
+        boundary.physicsBody?.affectedByGravity = false
+        boundary.physicsBody?.friction = 0.0
+        boundary.physicsBody?.restitution = 0.0 //BOUNCYINESS
+        boundary.physicsBody?.linearDamping = 0.1
+        boundary.physicsBody?.angularDamping = 0.1
+        
+        boundary.physicsBody?.categoryBitMask = boundaryCategory
+        boundary.physicsBody?.contactTestBitMask = targetCategory | normalCategory
+        boundary.physicsBody?.collisionBitMask = boundaryCategory | targetCategory | normalCategory
+        
+        self.addChild(boundary)
     }
     
     

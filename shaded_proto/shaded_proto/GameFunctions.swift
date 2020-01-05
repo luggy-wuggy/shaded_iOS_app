@@ -11,27 +11,31 @@ import SpriteKit
 
 extension GameScene{
     
+    
     func didBegin(_ contact: SKPhysicsContact) {
-        var firstBody : SKPhysicsBody
+        var firstBody = contact.bodyA
         var secondBody : SKPhysicsBody
         
-        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-            firstBody = contact.bodyA
-            secondBody = contact.bodyB
-        }else{
-            firstBody = contact.bodyB
-            secondBody = contact.bodyA
+        if firstBody.categoryBitMask == platformCategory{
+            if contact.bodyB.categoryBitMask == targetCategory{
+                secondBody = contact.bodyB
+                targetShapeCollide(shapeNode: secondBody.node as! SKShapeNode)
+            }else if (contact.bodyB.categoryBitMask == normalCategory){
+                secondBody = contact.bodyB
+                normalShapeCollide(shapeNode: secondBody.node as! SKShapeNode)
+            }
         }
         
-        if (firstBody.categoryBitMask & targetCategory) != platformCategory && (secondBody.categoryBitMask & platformCategory) != targetCategory{
-            targetShapeCollide(platformNode: firstBody.node as! SKShapeNode, shapeNode: secondBody.node as! SKShapeNode)
-        }else{
-            normalShapeCollide(platformNode: firstBody.node as! SKShapeNode, shapeNode: secondBody.node as! SKShapeNode)
+        if firstBody.categoryBitMask == boundaryCategory{
+            firstBody = contact.bodyA
+            boundaryCollide(shapeNode: contact.bodyB.node as! SKShapeNode)
         }
+
         
     }
     
-    func targetShapeCollide (platformNode: SKShapeNode, shapeNode: SKShapeNode){
+
+    func targetShapeCollide (shapeNode: SKShapeNode){
         
         let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
         shapeNode.run(SKAction.sequence(collision))
@@ -40,8 +44,9 @@ extension GameScene{
         
     }
     
-    func normalShapeCollide (platformNode: SKShapeNode, shapeNode: SKShapeNode){
+    func normalShapeCollide (shapeNode: SKShapeNode){
         
+        shakeCamera(layer: shapeNode, duration: 1.0)
         let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
         shapeNode.run(SKAction.sequence(collision))
         
@@ -49,27 +54,29 @@ extension GameScene{
         
     }
     
-//    func torpedoDidCollideWithAlien (torpedoNode:SKSpriteNode, alienNode:SKSpriteNode) {
-//
-//        let explosion = SKEmitterNode(fileNamed: "Explosion")!
-//        explosion.position = alienNode.position
-//        self.addChild(explosion)
-//
-//        self.run(SKAction.playSoundFileNamed("explosion.mp3", waitForCompletion: false))
-//
-//        torpedoNode.removeFromParent()
-//        alienNode.removeFromParent()
-//
-//
-//        self.run(SKAction.wait(forDuration: 2)) {
-//            explosion.removeFromParent()
-//        }
-//
-//        score += 5
-//
-//
-//    }
+    func boundaryCollide (shapeNode: SKShapeNode){
+        let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
+        shapeNode.run(SKAction.sequence(collision))
+    }
     
+    func shakeCamera(layer:SKShapeNode, duration:Float) {
+
+        let amplitudeX:Float = 20;
+        let amplitudeY:Float = 12;
+        let numberOfShakes = duration / 0.04;
+        var actionsArray:[SKAction] = [];
+        for _ in 1...Int(numberOfShakes) {
+            let moveX = Float(arc4random_uniform(UInt32(amplitudeX))) - amplitudeX / 2;
+            let moveY = Float(arc4random_uniform(UInt32(amplitudeY))) - amplitudeY / 2;
+            let shakeAction = SKAction.moveBy(x: CGFloat(moveX), y: CGFloat(moveY), duration: 0.02);
+            shakeAction.timingMode = SKActionTimingMode.easeOut;
+            actionsArray.append(shakeAction);
+            actionsArray.append(shakeAction.reversed());
+        }
+
+        let actionSeq = SKAction.sequence(actionsArray);
+        layer.run(actionSeq);
+    }
     
     func createRGB_Values() -> [Array<CGFloat>] {
           

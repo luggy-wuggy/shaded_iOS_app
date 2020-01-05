@@ -12,6 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var platform = SKShapeNode()
+    var boundary = SKShapeNode()
     
     var scoreLabel:SKLabelNode!
     var score:Int = 0{
@@ -21,7 +22,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var gameTimer:Timer!
-
+    
+    let boundaryCategory:UInt32 = 0x1 << 3
     let normalCategory:UInt32 = 0x1 << 2
     let targetCategory:UInt32 = 0x1 << 1
     let platformCategory:UInt32 = 0x1 << 0
@@ -30,8 +32,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         
         addPlatform()
+        addBoundary()
         addLabel()
-        gameTimer = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
+        gameTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
 
         
         self.physicsWorld.contactDelegate = self
