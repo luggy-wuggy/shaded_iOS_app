@@ -13,6 +13,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var platform = SKShapeNode()
     var boundary = SKShapeNode()
+    var heartLives = SKSpriteNode()
+    
+    let middle = SKSpriteNode()
+    let right = SKSpriteNode()
+    let left = SKSpriteNode()
+    var livesArray = [SKSpriteNode()]
+    
+    
+    
+    
+    
     
     var scoreLabel:SKLabelNode!
     var score:Int = 0{
@@ -34,11 +45,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addPlatform()
         addBoundary()
         addLabel()
-        gameTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
-
+        lives(middle: middle, left: left, right: right)
+        
+        gameTimer = Timer.scheduledTimer(timeInterval: 1.2, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
         
         self.physicsWorld.contactDelegate = self
-
     }
     
     

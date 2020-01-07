@@ -46,9 +46,16 @@ extension GameScene{
     
     func normalShapeCollide (shapeNode: SKShapeNode){
         
-        shakeCamera(layer: shapeNode, duration: 1.0)
+        
+        shakeCamera(shape: shapeNode, duration: 1.0)
         let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
         shapeNode.run(SKAction.sequence(collision))
+        
+        if livesArray.count != 0{
+            let life = livesArray.popLast()!
+            life.run(SKAction.removeFromParent())
+        }
+
         
         score -= 1
         
@@ -59,7 +66,7 @@ extension GameScene{
         shapeNode.run(SKAction.sequence(collision))
     }
     
-    func shakeCamera(layer:SKShapeNode, duration:Float) {
+    func shakeCamera(shape: SKShapeNode, duration:Float) {
 
         let amplitudeX:Float = 20;
         let amplitudeY:Float = 12;
@@ -75,7 +82,10 @@ extension GameScene{
         }
 
         let actionSeq = SKAction.sequence(actionsArray);
-        layer.run(actionSeq);
+        shape.run(actionSeq);
+        scoreLabel.run(actionSeq);
+        platform.run(actionSeq);
+        boundary.run(actionSeq);
     }
     
     func createRGB_Values() -> [Array<CGFloat>] {
