@@ -8,9 +8,13 @@
 
 import SpriteKit
 import GameplayKit
+import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    
+
+    let circle = (SKShapeNode(circleOfRadius: 85), SKPhysicsBody(circleOfRadius: 85))
+
+
     var platform = SKShapeNode()
     var boundary = SKShapeNode()
     var heartLives = SKSpriteNode()
@@ -19,11 +23,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let right = SKSpriteNode()
     let left = SKSpriteNode()
     var livesArray = [SKSpriteNode()]
-    
-    
-    
-    
-    
     
     var scoreLabel:SKLabelNode!
     var score:Int = 0{
@@ -42,12 +41,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
-        addPlatform()
         addBoundary()
+        addPlatform()
         addLabel()
         lives(middle: middle, left: left, right: right)
         
-        gameTimer = Timer.scheduledTimer(timeInterval: 1.2, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
+
+        
+        let action = SKAction.sequence([SKAction.wait(forDuration: 6.0), SKAction.run {
+            Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.threeShapes), userInfo: nil, repeats: true)
+            }])
+        
+        run(action)
+
+        
+        //gameTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(threeShapes), userInfo: nil, repeats: true)
         
         self.physicsWorld.contactDelegate = self
     }

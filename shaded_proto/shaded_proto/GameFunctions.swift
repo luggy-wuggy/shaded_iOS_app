@@ -45,7 +45,7 @@ extension GameScene{
     }
     
     func normalShapeCollide (shapeNode: SKShapeNode){
-        
+        score -= 1
         
         shakeCamera(shape: shapeNode, duration: 1.0)
         let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
@@ -55,9 +55,16 @@ extension GameScene{
             let life = livesArray.popLast()!
             life.run(SKAction.removeFromParent())
         }
+        
+
+        if livesArray.count == 0 {
+            let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOver = SKScene(fileNamed: "GameOverScene") as! GameOverScene
+            gameOver.score = self.score
+            self.view?.presentScene(gameOver, transition: transition)
+        }
 
         
-        score -= 1
         
     }
     
@@ -86,26 +93,76 @@ extension GameScene{
         scoreLabel.run(actionSeq);
         platform.run(actionSeq);
         boundary.run(actionSeq);
+        for live in livesArray{
+            live.run(actionSeq);
+        }
+        
+   
+    }
+    
+ 
+    
+    
+    
+    func objectFadeIn(object: SKNode, pauseDuration: Double = 2.0, duration: Double = 5.0){
+        object.alpha = 0.0
+        let fade = [SKAction.wait(forDuration: pauseDuration), SKAction.fadeAlpha(to: 1.0, duration: duration)]
+        object.run(SKAction.sequence(fade))
+    }
+    
+    // acceleration
+    func timerDrop(interval: Double, probablity: Int){
+        
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: true){ timer in
+            
+            self.threeShapes()
+            let randomNumber = Int.random(in: 1 ... probablity)
+            if randomNumber == 10{
+                timer.invalidate()
+            }
+            
+        }
     }
     
     func createRGB_Values() -> [Array<CGFloat>] {
           
-          // rgbValues: Declares an array of CGFloat between 0 ... 1 to denote RGB values
-          // rgbValues_Target: Declares an array of CGFloat using the values from rgbValues array
-          let rgbValues: [CGFloat] = [CGFloat.random(in: 0.00 ... 1.00), CGFloat.random(in: 0.00 ... 1.00), CGFloat.random(in: 0.00 ... 1.00)]
-          var rgbValues_Target: [CGFloat] = [0.0,0.0,0.0]
+        // rgbValues: Declares an array of CGFloat between 0 ... 1 to denote RGB values
+        // rgbValues_Target: Declares an array of CGFloat using the values from rgbValues array
+        let rgbValues: [CGFloat] = [CGFloat.random(in: 0.00 ... 1.00), CGFloat.random(in: 0.00 ... 1.00), CGFloat.random(in: 0.00 ... 1.00)]
+        var rgbValues_Target: [CGFloat] = [0.0,0.0,0.0]
           
-          for color in 0...2{
-              var newColorValue = rgbValues[color] + 0.10
-              if newColorValue > 1.0{
-                  newColorValue = rgbValues[color]
-              }
-              rgbValues_Target[color] = newColorValue
-          }
+        let rgbDiff = Bool.random()
+        var newColorValue : CGFloat
+        
+        for color in 0...2{
+            
+            if rgbDiff{
+                
+                newColorValue = rgbValues[color] + 0.15
+                if newColorValue > 1.0{
+                    newColorValue = rgbValues[color]
+                }
+                
+                rgbValues_Target[color] = newColorValue
+                
+                
+            }else{
+                
+                newColorValue = rgbValues[color] - 0.15
+                if newColorValue < 0.0{
+                    newColorValue = rgbValues[color]
+                }
+                
+                rgbValues_Target[color] = newColorValue
+                
+            }
+            
+            
+        }
           
-          let rgbPackage = [rgbValues, rgbValues_Target]
+        let rgbPackage = [rgbValues, rgbValues_Target]
           
-          return rgbPackage
+        return rgbPackage
       }
     
     
