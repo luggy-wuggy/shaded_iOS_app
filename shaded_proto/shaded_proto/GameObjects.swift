@@ -12,7 +12,7 @@ import GameplayKit
 
 extension GameScene {
     
-    @objc func threeShapes(){
+    @objc func threeShapes(shapes : Bool){
         
         
         // RGB picker
@@ -26,130 +26,29 @@ extension GameScene {
         shapePosition = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: shapePosition) as! [CGFloat]
         let randomPosition = shapePosition.popLast()!
         
-        let randomShape = Bool.random()
         
-        
-
-        if randomShape{
-            squareShape(xPosition: randomPosition, rgbValue: targetColor, targetBool: true)
-
+        if shapes{
+            shape(xPosition: randomPosition, rgbValue: targetColor, targetBool: true, shape: true)
+            
             for _ in 0 ... 1{
                 let randomPosition = shapePosition.popLast()!
-                squareShape(xPosition: randomPosition, rgbValue: normalColor, targetBool: false)
+                shape(xPosition: randomPosition, rgbValue: normalColor, targetBool: false, shape: true)
             }
-
         }else{
-            circleShape(xPosition: randomPosition, rgbValue: targetColor, targetBool: true)
-
+            let randomShape = Bool.random()
+            
+            shape(xPosition: randomPosition, rgbValue: targetColor, targetBool: true, shape: randomShape)
+            
             for _ in 0 ... 1{
                 let randomPosition = shapePosition.popLast()!
-                circleShape(xPosition: randomPosition, rgbValue: normalColor, targetBool: false)
+                shape(xPosition: randomPosition, rgbValue: normalColor, targetBool: false, shape: randomShape)
             }
-
-
         }
+        
+        
 
     }
     
-
-    
-    func circleShape(xPosition: CGFloat, rgbValue: SKColor, targetBool: Bool){
-
-//        let randomShape = Bool.random()
-//        let shape:SKShapeNode
-//
-//        if randomShape{
-//            shape = (SKShapeNode(circleOfRadius: 85))
-//            shape.physicsBody = SKPhysicsBody(circleOfRadius: 85)
-//        }else{
-//            shape = SKShapeNode(rectOf: CGSize(width: 170, height: 170), cornerRadius: 15)
-//            shape.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 170, height: 170))
-//        }
-        
-        // Dimensions and Positioning of TargetedShape
-        let shape = (SKShapeNode(circleOfRadius: 85))
-        shape.position = CGPoint(x: xPosition, y: frame.maxY + 120)
-        shape.strokeColor = rgbValue
-        //shape.fillColor = rgbValue
-        shape.glowWidth = 1.0
-        shape.lineWidth = 20
-        
-        // Physics Attribute
-        shape.physicsBody = SKPhysicsBody(circleOfRadius: 85)
-        shape.physicsBody?.isDynamic = true
-        shape.physicsBody?.allowsRotation = false
-        shape.physicsBody?.pinned = false
-        shape.physicsBody?.affectedByGravity = true
-        shape.physicsBody?.friction = 0.0
-        shape.physicsBody?.restitution = 0.4     //BOUNCYINESS
-        shape.physicsBody?.linearDamping = 0.3
-        shape.physicsBody?.angularDamping = 0.2
-        
-        // Collision Attributes
-        if targetBool{
-            shape.physicsBody?.categoryBitMask = targetCategory
-            shape.physicsBody?.contactTestBitMask = platformCategory | boundaryCategory
-        }else{
-            shape.physicsBody?.categoryBitMask = normalCategory
-            shape.physicsBody?.contactTestBitMask = platformCategory | boundaryCategory
-        }
-        shape.physicsBody?.collisionBitMask = platformCategory | boundaryCategory | targetCategory | normalCategory
-        shape.physicsBody?.usesPreciseCollisionDetection = true
-        
-        SKAction.wait(forDuration: 20)
-        
-        self.addChild(shape)
-        
-    }
-    
-    @objc func squareShape(xPosition: CGFloat, rgbValue: SKColor, targetBool: Bool){
-
-        // Dimensions and Positioning of TargetedShape
-        let shape = SKShapeNode(rectOf: CGSize(width: 170, height: 170), cornerRadius: 15)
-        shape.position = CGPoint(x: xPosition, y: frame.maxY + 120)
-        shape.strokeColor = rgbValue
-        //shape.fillColor = rgbValue
-        shape.glowWidth = 1.0
-        shape.lineWidth = 20
-
-        // Physics Attribute
-        shape.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 170, height: 170))
-        shape.physicsBody?.isDynamic = true
-        shape.physicsBody?.allowsRotation = false
-        shape.physicsBody?.pinned = false
-        shape.physicsBody?.affectedByGravity = true
-        shape.physicsBody?.friction = 0.0
-        shape.physicsBody?.restitution = 0.4     //BOUNCYINESS
-        shape.physicsBody?.linearDamping = 0.3
-        shape.physicsBody?.angularDamping = 0.2
-
-        // Collision Attributes
-        if targetBool{
-            shape.physicsBody?.categoryBitMask = targetCategory
-            shape.physicsBody?.contactTestBitMask = platformCategory | boundaryCategory
-        }else{
-            shape.physicsBody?.categoryBitMask = normalCategory
-            shape.physicsBody?.contactTestBitMask = platformCategory | boundaryCategory
-        }
-        shape.physicsBody?.collisionBitMask = platformCategory | boundaryCategory | targetCategory | normalCategory
-        shape.physicsBody?.usesPreciseCollisionDetection = true
-
-        // Rotation Attributes
-        let rotationRandomizer : Int = Int.random(in: 0 ... 1)
-        var rotate = SKAction()
-
-        //Randomizes whether square rotates clockwise or counter clockwise
-        if rotationRandomizer == 0 {
-            rotate = SKAction.rotate(byAngle: 2.0 * CGFloat(-Double.pi), duration: 3.5)
-        }else{
-            rotate = SKAction.rotate(byAngle: 2.0 * CGFloat(Double.pi), duration: 3.5)
-        }
-
-        shape.run(SKAction.repeatForever((rotate)))
-
-        self.addChild(shape)
-    }
-
     
     
     func addPlatform(){

@@ -8,6 +8,9 @@
 
 import GameplayKit
 import SpriteKit
+import AVFoundation
+
+
 
 extension GameScene{
     
@@ -37,16 +40,53 @@ extension GameScene{
 
     func targetShapeCollide (shapeNode: SKShapeNode){
         
+        //let collision = Bundle.main.path(forResource: "collision.wav", ofType: nil)
+        let portal = Bundle.main.path(forResource: "coin_1.wav", ofType: nil)
+       // let portal_2 = Bundle.main.path(forResource: "portal_2.wav", ofType: nil)
+        
+        let url : URL
+        
+        if Bool.random(){
+            url = URL(fileURLWithPath: portal!)
+        }else{
+            url = URL(fileURLWithPath: portal!)
+        }
+                
+        do {
+            collisionSoundEffect = try AVAudioPlayer(contentsOf: url)
+            collisionSoundEffect?.setVolume(0.25, fadeDuration: 0)
+            collisionSoundEffect?.play()
+        } catch {
+            // couldn't load file :(
+        }
+        
+        score += 1
+        
+
+        
         let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
         shapeNode.run(SKAction.sequence(collision))
         
-        score += 1
+        
         
     }
     
     func normalShapeCollide (shapeNode: SKShapeNode){
         score -= 1
         
+        let damage_sound = Bundle.main.path(forResource: "damage_sound.wav", ofType: nil)
+        let url = URL(fileURLWithPath: damage_sound!)
+        
+        do {
+            collisionSoundEffect = try AVAudioPlayer(contentsOf: url)
+            collisionSoundEffect?.setVolume(1.0, fadeDuration: 0)
+            collisionSoundEffect?.play()
+        } catch {
+            // couldn't load file :(
+        }
+
+        
+  
         shakeCamera(shape: shapeNode, duration: 1.0)
         let collision = [SKAction.fadeOut(withDuration: 0.5), SKAction.removeFromParent()]
         shapeNode.run(SKAction.sequence(collision))
@@ -56,14 +96,25 @@ extension GameScene{
             life.run(SKAction.removeFromParent())
         }
         
+        
 
         if livesArray.count == 0 {
+            
+            AudioPlayer.stop()
+            
+            if score > highScore.integer(forKey: "HIGHSCORE"){
+                highScore.set(score, forKey: "HIGHSCORE")
+            }
+            
             let transition = SKTransition.flipHorizontal(withDuration: 0.5)
             let gameOver = SKScene(fileNamed: "GameOverScene") as! GameOverScene
             gameOver.score = self.score
+            gameOver.scaleMode = .aspectFit 
+            gameOver.highScore = self.highScore.integer(forKey: "HIGHSCORE")
             self.view?.presentScene(gameOver, transition: transition)
         }
 
+        
         
         
     }
@@ -100,29 +151,12 @@ extension GameScene{
    
     }
     
- 
-    
-    
-    
     func objectFadeIn(object: SKNode, pauseDuration: Double = 2.0, duration: Double = 5.0){
         object.alpha = 0.0
         let fade = [SKAction.wait(forDuration: pauseDuration), SKAction.fadeAlpha(to: 1.0, duration: duration)]
         object.run(SKAction.sequence(fade))
     }
     
-    // acceleration
-    func timerDrop(interval: Double, probablity: Int){
-        
-        Timer.scheduledTimer(withTimeInterval: interval, repeats: true){ timer in
-            
-            self.threeShapes()
-            let randomNumber = Int.random(in: 1 ... probablity)
-            if randomNumber == 10{
-                timer.invalidate()
-            }
-            
-        }
-    }
     
     func createRGB_Values() -> [Array<CGFloat>] {
           
