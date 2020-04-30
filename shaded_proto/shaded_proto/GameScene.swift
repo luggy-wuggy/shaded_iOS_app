@@ -14,11 +14,9 @@ import AVFoundation
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
 
-    let circle = (SKShapeNode(circleOfRadius: 85), SKPhysicsBody(circleOfRadius: 85))
     var platform = SKShapeNode()
     var boundary = SKShapeNode()
     
-    var heartLives = SKSpriteNode()
     let middle = SKSpriteNode()
     let right = SKSpriteNode()
     let left = SKSpriteNode()
@@ -35,7 +33,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
    
     var collisionSoundEffect: AVAudioPlayer?
 
-    
         
     var gameTimer:Timer!
     
@@ -59,9 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         AudioPlayer.play()
         AudioPlayer.setVolume(0.50, fadeDuration: 4.5)
 
-        
-        //highScore.set(10, forKey: "HIGHSCORE")
-                
+                        
         addBoundary()
         addPlatform()
         addLabel()
@@ -75,10 +70,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         run(action)
         
-        
-
-        
-
         self.physicsWorld.contactDelegate = self
     }
     

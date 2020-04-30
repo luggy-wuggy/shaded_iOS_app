@@ -6,7 +6,6 @@
 //  Copyright © 2019 Luqman Abdurrohman. All rights reserved.
 //
 
-import SpriteKit
 import GameplayKit
 
 
@@ -15,7 +14,7 @@ struct PhysicsCategory {
     static let Platform : UInt32 = 0x1 << 1
     
 }
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     private var label : SKLabelNode?
@@ -33,43 +32,44 @@ class GameScene: SKScene {
         
         setupPlayerAndObstacle()
         addPlatform()
-        //score_Label()
+        score_Label()
+        //didBeginContact(contact: SKView )
         
 
         
         NSLog(String(score))
     }
     
-    func didBeginContact(contact : SKPhysicsContact){
-        let firstBody = contact.bodyA.node as! SKSpriteNode
-        let secondBody = contact.bodyB.node as! SKSpriteNode
-        
+//    func didBeginContact(contact : SKPhysicsContact){
+//        let firstBody = contact.bodyA.node as! SKSpriteNode
+//        let secondBody = contact.bodyB.node as! SKSpriteNode
+//        
 //        if contact.bodyA.collisionBitMask == PhysicsCategory.Object{
 //            NSLog(String(score))
 //        }
 //        if contact.bodyB.collisionBitMask == PhysicsCategory.Object{
 //            NSLog(String(score))
 //        }
-        
-        if ((firstBody.name == "Platform") && (secondBody.name == "Object")){
-            collision(Platform: firstBody, Shape: secondBody)
-            NSLog(String(score))
-            print("hello")
-        }
-        else if ((firstBody.name == "Object") && (secondBody.name == "Platform")){
-            collision(Platform: secondBody, Shape: firstBody)
-            NSLog(String(score))
-            print("hello")
-        }
-        
-    }
+//        
+//        if ((firstBody.name == "Platform") && (secondBody.name == "Object")){
+//            collision(Platform: firstBody, Shape: secondBody)
+//            NSLog(String(score))
+//            print("hello")
+//        }
+//        else if ((firstBody.name == "Object") && (secondBody.name == "Platform")){
+//            collision(Platform: secondBody, Shape: firstBody)
+//            NSLog(String(score))
+//            print("hello")
+//        }
+//        
+//    }
     
-    func collision(Platform : SKSpriteNode, Shape : SKSpriteNode){
-        score += 1
-        score_Label()
-        NSLog(String(score))
-        print("hello")
-    }
+//    func collision(Platform : SKSpriteNode, Shape : SKSpriteNode){
+//        score += 1
+//        score_Label()
+//        NSLog(String(score))
+//        print("hello")
+//    }
     
     func score_Label(){
         
@@ -87,8 +87,10 @@ class GameScene: SKScene {
         // Dimensions, Positioning, and Color of Platform
         platform = SKShapeNode.init(rectOf: CGSize.init(width: 200, height: 30))
         platform.position = CGPoint(x: 0,  y: -570)
-        platform.fillColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+        platform.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
         platform.strokeColor = SKColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+        platform.alpha = CGFloat(0)
+        
         
         //Physics Attribute for Platform
         platform.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 200, height: 30))
@@ -106,6 +108,8 @@ class GameScene: SKScene {
         platform.physicsBody?.collisionBitMask = PhysicsCategory.Object
         platform.physicsBody?.contactTestBitMask = PhysicsCategory.Object | PhysicsCategory.Platform;
         platform.name = "Platform"
+        
+        platform.run(SKAction.fadeIn(withDuration: 2.0))
         
         self.addChild(platform)
         
@@ -221,13 +225,15 @@ class GameScene: SKScene {
     }
     
     // A function that returns an array of size two with the element being an array of CGFloats
+    // First element array: normal rgb values
+    // Second element array: modified rgb values denoted as the target rgb
     // For example: [ [0.7, 0.3, 0.5], [0.8, 0.4, 0.6] ]
     func createRGB_Values() -> [Array<CGFloat>] {
         
         // rgbValues: Declares an array of CGFloat between 0 ... 1 to denote RGB values
         // rgbValues_Target: Declares an array of CGFloat using the values from rgbValues array
         let rgbValues: [CGFloat] = [CGFloat.random(in: 0.00 ... 1.00), CGFloat.random(in: 0.00 ... 1.00), CGFloat.random(in: 0.00 ... 1.00)]
-        var rgbValues_Target: [CGFloat] = [0.0,0.0,0.0] //
+        var rgbValues_Target: [CGFloat] = [0.0,0.0,0.0]
         
         for color in 0...2{
             var newColorValue = rgbValues[color] + 0.10
@@ -244,10 +250,7 @@ class GameScene: SKScene {
 
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        
+     
         for t in touches {
             let location = t.location(in: self)
             

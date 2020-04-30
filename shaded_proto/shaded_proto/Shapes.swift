@@ -17,11 +17,11 @@ extension GameScene{
         let object : SKShapeNode
         
         if shape{
-            object = SKShapeNode(circleOfRadius: 85)
-            object.physicsBody = SKPhysicsBody(circleOfRadius: 85)
+            object = SKShapeNode(circleOfRadius: 75)
+            object.physicsBody = SKPhysicsBody(circleOfRadius: 75)
         }else{
-            object = SKShapeNode(rectOf: CGSize(width: 170, height: 170), cornerRadius: 15)
-            object.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 170, height: 170))
+            object = SKShapeNode(rectOf: CGSize(width: 155, height: 155), cornerRadius: 15)
+            object.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 155, height: 155))
             
             // Rotation Attributes
             let rotationRandomizer : Int = Int.random(in: 0 ... 1)

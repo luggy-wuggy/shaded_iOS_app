@@ -109,7 +109,7 @@ extension GameScene{
             let transition = SKTransition.flipHorizontal(withDuration: 0.5)
             let gameOver = SKScene(fileNamed: "GameOverScene") as! GameOverScene
             gameOver.score = self.score
-            gameOver.scaleMode = .aspectFit 
+            gameOver.scaleMode = .aspectFill
             gameOver.highScore = self.highScore.integer(forKey: "HIGHSCORE")
             self.view?.presentScene(gameOver, transition: transition)
         }

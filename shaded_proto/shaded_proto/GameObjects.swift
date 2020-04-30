@@ -22,7 +22,7 @@ extension GameScene {
         let normalColor: SKColor = SKColor.init(red: rgbNormal[0], green: rgbNormal[1], blue: rgbNormal[2], alpha: 1)
         let targetColor: SKColor = SKColor.init(red: rgbTarget[0], green: rgbTarget[1], blue: rgbTarget[2], alpha: 1)
         
-        var shapePosition : [CGFloat] = [(frame.minX)/1.5, (frame.midX), (frame.maxX)/1.5]
+        var shapePosition : [CGFloat] = [(frame.minX)/1.65, (frame.midX), (frame.maxX)/1.65]
         shapePosition = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: shapePosition) as! [CGFloat]
         let randomPosition = shapePosition.popLast()!
         
@@ -54,7 +54,7 @@ extension GameScene {
     func addPlatform(){
         
         // Dimensions, Positioning, and Color of Platform
-        platform = SKShapeNode.init(rectOf: CGSize.init(width: 170, height: 30))
+        platform = SKShapeNode.init(rectOf: CGSize.init(width: 155, height: 28))
         platform.position = CGPoint(x: 0,  y: -570)
         platform.fillColor = SKColor.white
         platform.strokeColor = SKColor.white
